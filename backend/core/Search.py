@@ -8,7 +8,7 @@ class Search(Resource):
         parser.add_argument('url', type=str)
         args = parser.parse_args()
         fullUrl = args['url']
-        url = 'https://' + \
+        url = 'https://' + ('' if 'www' in fullUrl else 'www') +\
             fullUrl.split('//')[len(fullUrl.split('//')) - 1]
         content = requests.get(url).content
         soup = BeautifulSoup(content, "html.parser")
@@ -19,10 +19,13 @@ class Search(Resource):
             if not pElement.find_all("p"):
                 leafCounter += 1
         imageCounter = len(soup.find_all("img"))
+        images = soup.find_all("img", src=True)
+        imageSrc = [f"{'' if '://' in image['src'] else url}{image['src']}" for image in images]
         finalResult = {
             "url": url,
             "images": imageCounter,
-            "paragraphs": leafCounter
+            "paragraphs": leafCounter,
+            "src" : imageSrc, 
         }
         data = finalResult
         return data

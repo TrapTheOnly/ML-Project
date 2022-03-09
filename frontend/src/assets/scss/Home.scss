@@ -1,0 +1,14 @@
+// @mixin TextFieldMixin {
+// 	outline-color: #41337a;
+// }
+@use "@material/theme" with (
+	$primary: #41337a,
+	$on-primary: #ecfee8
+);
+
+@use "@material/button";
+@use "@material/text-field";
+
+.searchField {
+	@include te;
+}
