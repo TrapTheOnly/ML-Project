@@ -25,7 +25,7 @@ function Home() {
   const [imagesList, setImagesList] = useState([])
   async function getData(query) {
     await searchPage({ url: query }).then(res => {
-      setRes(`Images count: ${res.data.images}\nParagraphs count: ${res.data.paragraphs}`)
+      setRes(`Images count: ${res.data.images}\nParagraphs count: ${res.data.paragraphs}\nPage text: \n${res.data.text}`)
       setImagesList(res.data.src)
       console.log(res)
     })
@@ -36,6 +36,7 @@ function Home() {
       minHeight: '85vh',
       minWidth: '100vw',
       paddingTop: '15vh',
+      paddingBottom: '15vh'
     }}>
       <div style={{
         width: '60%',
@@ -45,6 +46,7 @@ function Home() {
         padding: '20px',
         minHeight: '70vh',
         marginLeft: '20%',
+        // marginBottom: '5vh'
       }}>
         <h1 style={{
           fontSize: 40,
