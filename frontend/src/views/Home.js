@@ -3,7 +3,10 @@ import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
 import ImageList from '@mui/material/ImageList';
 import ImageListItem from '@mui/material/ImageListItem';
-import { useHistory } from 'react-router-dom';
+import Slider from '@mui/material/Slider';
+import Typography from '@mui/material/Typography';
+import Grid from '@mui/material/Grid';
+
 
 import { searchPage } from "shared/request.js"
 // import 'assets/scss/Home.scss';
@@ -23,10 +26,26 @@ function Home() {
   const [query, setQuery] = useState("")
   const [res, setRes] = useState("")
   const [imagesList, setImagesList] = useState([])
+  const [threshold, setThreshold] = useState()
+  const [width, setWidth] = useState()
+  const [height, setHeight] = useState()
+  const [resWidth, setResWidth] = useState()
+  const [resHeight, setResHeight] = useState()
   async function getData(query) {
-    await searchPage({ url: query }).then(res => {
-      setRes(`Images count: ${res.data.images}\nParagraphs count: ${res.data.paragraphs}\nPage text: \n${res.data.text}`)
+    await searchPage({ url: query, threshold: threshold, width: width, height: height }).then(res => {
+      setRes(
+        `Images count: ${res.data.images}
+Paragraphs count: ${res.data.paragraphs}
+Width: ${res.data.width}
+Height: ${res.data.height}
+Threshold: ${res.data.threshold}
+Page text: \n${res.data.text}
+      `)
       setImagesList(res.data.src)
+      setWidth(res.data.width)
+      setHeight(res.data.height)
+      setResWidth(res.data.width)
+      setResHeight(res.data.height)
       console.log(res)
     })
   }
@@ -46,7 +65,6 @@ function Home() {
         padding: '20px',
         minHeight: '70vh',
         marginLeft: '20%',
-        // marginBottom: '5vh'
       }}>
         <h1 style={{
           fontSize: 40,
@@ -54,6 +72,65 @@ function Home() {
           textAlign: 'center',
           color: "#41337a",
         }}>Webpage Scraper</h1>
+        <Grid container spacing={2} style={{ marginLeft: "5%", width: '90%' }}>
+          <Grid item xs={4} >
+            <Typography id="input-slider" gutterBottom style={{ marginLeft: '5%' }}>
+              Threshold
+            </Typography>
+            <Slider
+              aria-label="Threshold"
+              value={threshold}
+              defaultValue={20}
+              onChange={(event, value) => {
+                setThreshold(value)
+              }}
+              getAriaValueText={(value) => { return `${value}` }}
+              valueLabelDisplay="auto"
+              min={0}
+              max={1000}
+              style={{
+                width: '93%',
+              }} />
+          </Grid>
+          <Grid item xs={4}>
+            <Typography id="input-slider" gutterBottom style={{ marginLeft: '5%' }}>
+              Width
+            </Typography>
+            <Slider
+              aria-label="Width"
+              value={width}
+              defaultValue={120}
+              onChange={(event, value) => {
+                setWidth(value)
+              }}
+              getAriaValueText={(value) => { return `${value}` }}
+              valueLabelDisplay="auto"
+              min={100}
+              max={500}
+              style={{
+                width: '93%',
+              }} />
+          </Grid>
+          <Grid item xs={4}>
+            <Typography id="input-slider" gutterBottom style={{ marginLeft: '5%' }}>
+              Height
+            </Typography>
+            <Slider
+              aria-label="Height"
+              value={height}
+              defaultValue={120}
+              onChange={(event, value) => {
+                setHeight(value);
+              }}
+              getAriaValueText={(value) => { return `${value}` }}
+              valueLabelDisplay="auto"
+              min={100}
+              max={500}
+              style={{
+                width: '93%',
+              }} />
+          </Grid>
+        </Grid>
         <TextField id="outlined-search" label="URL to search" type="search" style={{
           width: "70%",
           marginLeft: "5%",
@@ -84,24 +161,25 @@ function Home() {
           }}
           value={res == "" ? "Search a URL to get the results" : res}
         />
-        <ImageList sx={{ width: 520, minHeight: 200 }} cols={3} rowHeight={164} style={{
-          width: "90%",
-          marginLeft: "5%",
-          marginTop: "2%"
-        }}>
+        <ImageList variant="masonry" id="imgList"
+          cols={() => { return document.getElementById("imgList").clientWidth - 10 / resWidth }} gap={3}
+          rowHeight={resHeight} style={{
+            width: "90%",
+            marginLeft: "5%",
+            marginTop: "2%"
+          }}>
           {imagesList.map((item) => (
-            <ImageListItem key={item}>
+            <ImageListItem key={item} sx={{
+              width: `${resWidth}px !important`,
+              height: `${resHeight}px !important`,
+            }}>
               <img
+                className="imgOfList"
                 style={{
-                  // width: 164,
-                  // height: 164,
                   objectFit: "fill",
-                  // border: "1px solid #331e36",
                   borderRadius: 5,
                 }}
                 src={item}
-                // srcSet={`${item.img}?w=164&h=164&fit=crop&auto=format&dpr=2 2x`}
-                // alt={item.title}
                 loading="lazy"
               />
             </ImageListItem>
