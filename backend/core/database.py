@@ -1,6 +1,4 @@
 import sqlite3
-from sqlite3 import Error
-
 
 def createConnection():
     with sqlite3.connect('project.db') as conn:
@@ -24,8 +22,3 @@ def addParagraphs (data):
     conn.commit()
     if conn:
         conn.close()
-   
-
-
-
- 
